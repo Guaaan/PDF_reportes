@@ -51,7 +51,7 @@ namespace PDF
                 tabla.AddHeaderCell(new Cell().Add(new Paragraph(columna).SetFont(fontColumnas)));
             }
 
-            string sql = "SELECT idArticulos, Nombre, Precio FROM productos";
+            string sql = "SELECT idArticulo, Nombre, Precio FROM productos";
 
             MySqlConnection conexionBD = Conexion.conexion();
             conexionBD.Open();
