@@ -1,4 +1,5 @@
 ﻿using iText.IO.Font.Constants;
+using iText.IO.Image;
 using iText.Kernel.Font;
 using iText.Kernel.Geom;
 using iText.Kernel.Pdf;
@@ -50,7 +51,7 @@ namespace PDF
                 tabla.AddHeaderCell(new Cell().Add(new Paragraph(columna).SetFont(fontColumnas)));
             }
 
-            string sql = "SELECT * FROM productos_db.productos;";
+            string sql = "SELECT idArticulos, Nombre, Precio FROM productos";
 
             MySqlConnection conexionBD = Conexion.conexion();
             conexionBD.Open();
@@ -63,12 +64,39 @@ namespace PDF
                 tabla.AddCell(new Cell().Add(new Paragraph(reader["idArticulo"].ToString()).SetFont(fontContenido)));
                 tabla.AddCell(new Cell().Add(new Paragraph(reader["Nombre"].ToString()).SetFont(fontContenido)));
                 tabla.AddCell(new Cell().Add(new Paragraph(reader["Precio"].ToString()).SetFont(fontContenido)));
-                tabla.AddCell(new Cell().Add(new Paragraph(reader["categoria"].ToString()).SetFont(fontContenido)));
-
             }
 
             documento.Add(tabla);
             documento.Close();
+
+            var logo = new iText.Layout.Element.Image(ImageDataFactory.Create("C:/Users/pc/Desktop/img/logoGem.jpg")).SetWidth(50);
+            var plogo = new Paragraph("").Add(logo);
+
+            var titulo = new Paragraph("Reporte de productos");
+            titulo.SetTextAlignment(TextAlignment.CENTER);
+            titulo.SetFontSize(12);
+
+            var dfecha = DateTime.Now.ToString("dd-MM-yyyy");
+            var dhora = DateTime.Now.ToString("hh:mm:ss");
+            var fecha = new Paragraph("Fecha: " + dfecha + "\nHora: " + dhora);
+            fecha.SetFontSize(12);
+
+            PdfDocument pdfDoc = new PdfDocument(new PdfReader("Reporte.pdf"), new PdfWriter("ReporteProducto.Pdf"));
+            Document doc = new Document(pdfDoc);
+
+            int numeros = pdfDoc.GetNumberOfPages();
+
+            for (int i = 1; i< numeros; i++)
+            {
+                PdfPage pagina = pdfDoc.GetPage(i);
+                float y = (pdfDoc.GetPage(i).GetPageSize().GetTop() - 15);
+                doc.ShowTextAligned(plogo, 40, y, i, TextAlignment.CENTER, VerticalAlignment.TOP, 0);
+                doc.ShowTextAligned(plogo, 150, y - 15, i, TextAlignment.CENTER, VerticalAlignment.TOP, 0);
+                doc.ShowTextAligned(fecha, 520, y - 15, i, TextAlignment.CENTER, VerticalAlignment.TOP, 0);
+
+                doc.ShowTextAligned(new Paragraph(String.Format("Página {0} de {1}", i, numeros)), pdfDoc.GetPage(i).GetPageSize().GetWidth() / 2, pdfDoc.GetPage(i).GetPageSize().GetBottom() + 30, i, TextAlignment.CENTER, VerticalAlignment.TOP, 0);
+
+            }
         }
     }
 }
