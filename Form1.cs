@@ -5,6 +5,7 @@ using iText.Kernel.Pdf;
 using iText.Layout;
 using iText.Layout.Element;
 using iText.Layout.Properties;
+using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -44,9 +45,29 @@ namespace PDF
             Table tabla = new Table(UnitValue.CreatePercentArray(tamanios));
             tabla.SetWidth(UnitValue.CreatePercentValue(100));
 
+            foreach(string columna in columnas)
+            {
+                tabla.AddHeaderCell(new Cell().Add(new Paragraph(columna).SetFont(fontColumnas)));
+            }
 
+            string sql = "SELECT * FROM productos_db.productos;";
 
+            MySqlConnection conexionBD = Conexion.conexion();
+            conexionBD.Open();
 
+            MySqlCommand comando = new MySqlCommand(sql, conexionBD);
+            MySqlDataReader reader = comando.ExecuteReader();
+            
+            while (reader.Read())
+            {
+                tabla.AddCell(new Cell().Add(new Paragraph(reader["idArticulo"].ToString()).SetFont(fontContenido)));
+                tabla.AddCell(new Cell().Add(new Paragraph(reader["Nombre"].ToString()).SetFont(fontContenido)));
+                tabla.AddCell(new Cell().Add(new Paragraph(reader["Precio"].ToString()).SetFont(fontContenido)));
+                tabla.AddCell(new Cell().Add(new Paragraph(reader["categoria"].ToString()).SetFont(fontContenido)));
+
+            }
+
+            documento.Add(tabla);
             documento.Close();
         }
     }
