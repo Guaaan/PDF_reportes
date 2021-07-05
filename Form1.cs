@@ -69,7 +69,7 @@ namespace PDF
             documento.Add(tabla);
             documento.Close();
 
-            var logo = new iText.Layout.Element.Image(ImageDataFactory.Create("C:/Users/pc/Desktop/img/logoGem.jpg")).SetWidth(50);
+            var logo = new iText.Layout.Element.Image(ImageDataFactory.Create("C:/Users/pc/Desktop/img/logogem.jpg")).SetWidth(50);
             var plogo = new Paragraph("").Add(logo);
 
             var titulo = new Paragraph("Reporte de productos");
