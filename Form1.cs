@@ -28,9 +28,11 @@ namespace PDF
 
         private void btnGenerar_Click(object sender, EventArgs e)
         {
-            crearPDF();
+            string filtro = txtFiltro.Text;
+            crearPDF(filtro);
+            axAcroPDF.src = "ReporteProducto.pdf";
         }
-        private void crearPDF()
+        private void crearPDF(string filtro)
         {          
             PdfWriter pdfWriter = new PdfWriter("Reporte.pdf");
             PdfDocument pdf = new PdfDocument(pdfWriter);
@@ -51,7 +53,7 @@ namespace PDF
                 tabla.AddHeaderCell(new Cell().Add(new Paragraph(columna).SetFont(fontColumnas)));
             }
 
-            string sql = "SELECT p.idArticulos, p.nombre, p.precio, c.nombre AS categorias FROM productos AS p INNER JOIN categorias AS c ON p.idCategoria=c.id";
+            string sql = "SELECT p.idArticulos, p.nombre, p.precio, c.nombre AS categorias FROM productos AS p INNER JOIN categorias AS c ON p.idCategoria=c.id WHERE c.nombre='"+ filtro +"'";
 
             MySqlConnection conexionBD = Conexion.conexion();
             conexionBD.Open();
