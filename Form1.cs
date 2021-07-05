@@ -30,7 +30,7 @@ namespace PDF
         {
             string filtro = txtFiltro.Text;
             crearPDF(filtro);
-            axAcroPDF.src = "ReporteProducto.pdf";
+            axAcroPDF.src = @"C:\Users\pc\Desktop\reportes_pdf\PDF\bin\Debug\ReporteProducto.pdf";
         }
         private void crearPDF(string filtro)
         {          
