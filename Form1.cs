@@ -31,7 +31,7 @@ namespace PDF
             crearPDF();
         }
         private void crearPDF()
-        {
+        {          
             PdfWriter pdfWriter = new PdfWriter("Reporte.pdf");
             PdfDocument pdf = new PdfDocument(pdfWriter);
             Document documento = new Document(pdf, PageSize.LETTER);
@@ -51,7 +51,7 @@ namespace PDF
                 tabla.AddHeaderCell(new Cell().Add(new Paragraph(columna).SetFont(fontColumnas)));
             }
 
-            string sql = "SELECT idArticulo, Nombre, Precio FROM productos";
+            string sql = "SELECT p.idArticulos, p.nombre, p.precio, c.nombre AS categorias FROM productos AS p INNER JOIN categorias AS c ON p.idCategoria=c.id";
 
             MySqlConnection conexionBD = Conexion.conexion();
             conexionBD.Open();
@@ -62,14 +62,15 @@ namespace PDF
             while (reader.Read())
             {
                 tabla.AddCell(new Cell().Add(new Paragraph(reader["idArticulo"].ToString()).SetFont(fontContenido)));
-                tabla.AddCell(new Cell().Add(new Paragraph(reader["Nombre"].ToString()).SetFont(fontContenido)));
-                tabla.AddCell(new Cell().Add(new Paragraph(reader["Precio"].ToString()).SetFont(fontContenido)));
+                tabla.AddCell(new Cell().Add(new Paragraph(reader["nombre"].ToString()).SetFont(fontContenido)));
+                tabla.AddCell(new Cell().Add(new Paragraph(reader["precio"].ToString()).SetFont(fontContenido)));
+                tabla.AddCell(new Cell().Add(new Paragraph(reader["categorias"].ToString()).SetFont(fontContenido)));
             }
 
             documento.Add(tabla);
             documento.Close();
 
-            var logo = new iText.Layout.Element.Image(ImageDataFactory.Create("C:/Users/pc/Desktop/img/logogem.jpg")).SetWidth(50);
+            var logo = new iText.Layout.Element.Image(ImageDataFactory.Create(@"C:\Users\pc\Desktop\img\logogem.jpg")).SetWidth(50);
             var plogo = new Paragraph("").Add(logo);
 
             var titulo = new Paragraph("Reporte de productos");
@@ -86,17 +87,18 @@ namespace PDF
 
             int numeros = pdfDoc.GetNumberOfPages();
 
-            for (int i = 1; i< numeros; i++)
+            for (int i = 1; i <= numeros; i++)
             {
                 PdfPage pagina = pdfDoc.GetPage(i);
                 float y = (pdfDoc.GetPage(i).GetPageSize().GetTop() - 15);
                 doc.ShowTextAligned(plogo, 40, y, i, TextAlignment.CENTER, VerticalAlignment.TOP, 0);
-                doc.ShowTextAligned(plogo, 150, y - 15, i, TextAlignment.CENTER, VerticalAlignment.TOP, 0);
+                doc.ShowTextAligned(titulo, 150, y - 15, i, TextAlignment.CENTER, VerticalAlignment.TOP, 0);
                 doc.ShowTextAligned(fecha, 520, y - 15, i, TextAlignment.CENTER, VerticalAlignment.TOP, 0);
 
                 doc.ShowTextAligned(new Paragraph(String.Format("Página {0} de {1}", i, numeros)), pdfDoc.GetPage(i).GetPageSize().GetWidth() / 2, pdfDoc.GetPage(i).GetPageSize().GetBottom() + 30, i, TextAlignment.CENTER, VerticalAlignment.TOP, 0);
 
             }
+            doc.Close();
         }
     }
 }
